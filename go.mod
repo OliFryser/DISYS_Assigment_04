@@ -1,4 +1,4 @@
-module github.com/NaddiNadja/peer-to-peer
+module github.com/OliFryser/DISYS_Assigment_04
 
 go 1.17
 
