@@ -4,14 +4,16 @@ package consensus;
 option go_package = "https://github.com/OliFryser/DISYS_Assigment_04;consensus";
 
 
-service Ping {
-    rpc ping (Request) returns (Reply) {}
+service Consensus {
+    rpc requestedAccess (Request) returns (Reply) {}
 }
 
 message Request {
-    int32 id = 1;
+    int32 lamportTime = 1;
+    int32 id = 2;
 }
 
 message Reply {
-    int32 amount = 1;
+    int32 lamportTime = 1;
+    int32 id = 2;
 }

@@ -14,86 +14,86 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// PingClient is the client API for Ping service.
+// ConsensusClient is the client API for Consensus service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type PingClient interface {
-	Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Reply, error)
+type ConsensusClient interface {
+	RequestedAccess(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Reply, error)
 }
 
-type pingClient struct {
+type consensusClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewPingClient(cc grpc.ClientConnInterface) PingClient {
-	return &pingClient{cc}
+func NewConsensusClient(cc grpc.ClientConnInterface) ConsensusClient {
+	return &consensusClient{cc}
 }
 
-func (c *pingClient) Ping(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Reply, error) {
+func (c *consensusClient) RequestedAccess(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Reply, error) {
 	out := new(Reply)
-	err := c.cc.Invoke(ctx, "/consensus.Ping/ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/consensus.Consensus/requestedAccess", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// PingServer is the server API for Ping service.
-// All implementations must embed UnimplementedPingServer
+// ConsensusServer is the server API for Consensus service.
+// All implementations must embed UnimplementedConsensusServer
 // for forward compatibility
-type PingServer interface {
-	Ping(context.Context, *Request) (*Reply, error)
-	mustEmbedUnimplementedPingServer()
+type ConsensusServer interface {
+	RequestedAccess(context.Context, *Request) (*Reply, error)
+	mustEmbedUnimplementedConsensusServer()
 }
 
-// UnimplementedPingServer must be embedded to have forward compatible implementations.
-type UnimplementedPingServer struct {
+// UnimplementedConsensusServer must be embedded to have forward compatible implementations.
+type UnimplementedConsensusServer struct {
 }
 
-func (UnimplementedPingServer) Ping(context.Context, *Request) (*Reply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+func (UnimplementedConsensusServer) RequestedAccess(context.Context, *Request) (*Reply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestedAccess not implemented")
 }
-func (UnimplementedPingServer) mustEmbedUnimplementedPingServer() {}
+func (UnimplementedConsensusServer) mustEmbedUnimplementedConsensusServer() {}
 
-// UnsafePingServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to PingServer will
+// UnsafeConsensusServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ConsensusServer will
 // result in compilation errors.
-type UnsafePingServer interface {
-	mustEmbedUnimplementedPingServer()
+type UnsafeConsensusServer interface {
+	mustEmbedUnimplementedConsensusServer()
 }
 
-func RegisterPingServer(s grpc.ServiceRegistrar, srv PingServer) {
-	s.RegisterService(&Ping_ServiceDesc, srv)
+func RegisterConsensusServer(s grpc.ServiceRegistrar, srv ConsensusServer) {
+	s.RegisterService(&Consensus_ServiceDesc, srv)
 }
 
-func _Ping_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Consensus_RequestedAccess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PingServer).Ping(ctx, in)
+		return srv.(ConsensusServer).RequestedAccess(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/consensus.Ping/ping",
+		FullMethod: "/consensus.Consensus/requestedAccess",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PingServer).Ping(ctx, req.(*Request))
+		return srv.(ConsensusServer).RequestedAccess(ctx, req.(*Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Ping_ServiceDesc is the grpc.ServiceDesc for Ping service.
+// Consensus_ServiceDesc is the grpc.ServiceDesc for Consensus service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Ping_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "consensus.Ping",
-	HandlerType: (*PingServer)(nil),
+var Consensus_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "consensus.Consensus",
+	HandlerType: (*ConsensusServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ping",
-			Handler:    _Ping_Ping_Handler,
+			MethodName: "requestedAccess",
+			Handler:    _Consensus_RequestedAccess_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
