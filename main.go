@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"time"
 
 	consensus "github.com/OliFryser/DISYS_Assigment_04/grpc"
 	"google.golang.org/grpc"
@@ -106,12 +107,23 @@ func (p *peer) requestAccessFromAll() {
 	request := &consensus.Request{LamportTime: p.lamportTime, Id: p.id}
 	for id, client := range p.clients {
 		go func() {
+			log.Printf("Requesting access from peer %d\n", id)
 			reply, err := client.RequestedAccess(p.ctx, request)
 			if err != nil {
 				fmt.Println("Something went wrong")
 			}
 			log.Printf("Got reply from peer %d\n", reply.Id)
 		}()
+	}
+	p.state = HELD
+	log.Printf("State is HELD\n")
+	writeToCriticalSection(p)
+	p.state = RELEASED
+	log.Printf("State is RELEASED\n")
+	for len(p.requestQueue) != 0 {
+		requestId := p.requestQueue[0]
+		p.queue[requestId] <- true
+		p.requestQueue = p.requestQueue[1:]
 	}
 }
 
@@ -129,5 +141,7 @@ func writeToCriticalSection(p *peer) {
 	//Write portnumber to Shared-file.txt
 	sharedFile.WriteString(fmt.Sprintf("port %d is the best", p.id))
 	log.Printf("Succesfully wrote to shared file.\n")
-	p.state = RELEASED
+
+	//Sleep to simulate longer access time
+	time.Sleep(2000 / time.Millisecond)
 }
