@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package consensus;
+option go_package = "https://github.com/OliFryser/DISYS_Assigment_04;consensus";
+
+
+service Ping {
+    rpc ping (Request) returns (Reply) {}
+}
+
+message Request {
+    int32 id = 1;
+}
+
+message Reply {
+    int32 amount = 1;
+}
