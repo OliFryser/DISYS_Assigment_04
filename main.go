@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	consensus "github.com/OliFryser/DISYS_Assigment_04/grpc"
@@ -30,6 +31,18 @@ func main() {
 		clients:      make(map[int32]consensus.ConsensusClient),
 		ctx:          ctx,
 	}
+
+	/*Parses id to string for logfile name
+	idString = strconv.Itoa(*p.id)
+
+	//Prints to log file instead of terminal
+
+	f, err := os.OpenFile("logfile."+*p.idString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+	log.SetOutput(f)*/
 
 	// Create listener tcp on port ownPort
 	list, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", ownPort))
@@ -67,6 +80,7 @@ func main() {
 	log.Printf("My id: %d", p.id)
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
+		p.IncrementLamportTime(0)
 		p.requestAccessFromAll()
 	}
 }
@@ -90,36 +104,65 @@ const (
 	WANTED
 )
 
-func (p *peer) RequestedAccess(ctx context.Context, req *consensus.Request) (*consensus.Reply, error) {
-	if p.state == HELD || (p.state == WANTED && p.lamportTime < req.LamportTime) {
-		p.requestQueue = append(p.requestQueue, req.Id)
-		<-p.queue[req.Id]
+func (p *peer) IncrementLamportTime(otherLamportTime int32) {
+	var mu sync.Mutex
+	defer mu.Unlock()
+	mu.Lock()
+	if p.lamportTime < otherLamportTime {
+		p.lamportTime = otherLamportTime + 1
+	} else {
+		p.lamportTime++
 	}
+}
+
+func (p *peer) RequestedAccess(ctx context.Context, req *consensus.Request) (*consensus.Reply, error) {
+	log.Printf("Received access request from peer %d (Lamport time %d)\n", req.Id, req.LamportTime)
+	p.IncrementLamportTime(req.LamportTime)
+	//This if statement looks like a mess. It checks if the state is held or if the state is wanted AND if our Lamport time is greater than the requested
+	//OR if it is the same and our id is less than the other one.
+	if p.state == HELD || (p.state == WANTED && (p.lamportTime < req.LamportTime || (p.lamportTime == req.LamportTime && p.id < req.Id))) {
+		p.requestQueue = append(p.requestQueue, req.Id) //If so add request to queue
+		<-p.queue[req.Id]                               //Channel blocks until we reply to queue
+	}
+	//Reply to request
 	reply := &consensus.Reply{
 		LamportTime: p.lamportTime,
 		Id:          p.id,
 	}
+	log.Printf("Reply access request from peer %d (Lamport time %d)\n", req.Id, p.lamportTime)
 	return reply, nil
 }
 
 func (p *peer) requestAccessFromAll() {
 	p.state = WANTED
-	request := &consensus.Request{LamportTime: p.lamportTime, Id: p.id}
+	log.Printf("State is WANTED\n")
+	//Request access from all peers and wait for reply
+	var wg sync.WaitGroup
 	for id, client := range p.clients {
-		go func() {
-			log.Printf("Requesting access from peer %d\n", id)
-			reply, err := client.RequestedAccess(p.ctx, request)
+		p.IncrementLamportTime(0)
+		request := &consensus.Request{LamportTime: p.lamportTime, Id: p.id}
+		wg.Add(1)
+		log.Printf("Requesting access from peer %d (Lamport time: %d)\n", id, p.lamportTime)
+		go func(requestId int32, requestClient consensus.ConsensusClient) {
+			defer wg.Done()
+			reply, err := requestClient.RequestedAccess(p.ctx, request)
 			if err != nil {
 				fmt.Println("Something went wrong")
 			}
-			log.Printf("Got reply from peer %d\n", reply.Id)
-		}()
+			p.IncrementLamportTime(reply.LamportTime)
+			log.Printf("Got reply from peer %d (Lamport time: %d)\n", reply.Id, p.lamportTime)
+		}(id, client)
 	}
+	wg.Wait()
+
+	//Access the critical section
 	p.state = HELD
 	log.Printf("State is HELD\n")
 	writeToCriticalSection(p)
 	p.state = RELEASED
 	log.Printf("State is RELEASED\n")
+
+	//Reply to all peers in queue by unblocking the channels
 	for len(p.requestQueue) != 0 {
 		requestId := p.requestQueue[0]
 		p.queue[requestId] <- true
@@ -130,18 +173,15 @@ func (p *peer) requestAccessFromAll() {
 func writeToCriticalSection(p *peer) {
 	filepath := "./CRITICAL_SECTION/Shared-file.txt"
 
-	log.Printf("Trying to write to shared file.\n")
-
 	//Create Shared-file.txt
 	sharedFile, err := os.Create(filepath)
 	if err != nil {
 		log.Fatalf("Could not write to file.\n")
 	}
 
+	// Sleep to simulate longer access
+	time.Sleep(5000 * time.Millisecond)
+
 	//Write portnumber to Shared-file.txt
 	sharedFile.WriteString(fmt.Sprintf("port %d is the best", p.id))
-	log.Printf("Succesfully wrote to shared file.\n")
-
-	//Sleep to simulate longer access time
-	time.Sleep(2000 / time.Millisecond)
 }
