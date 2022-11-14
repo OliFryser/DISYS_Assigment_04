@@ -117,7 +117,6 @@ func (p *peer) IncrementLamportTime(otherLamportTime int32) {
 
 func (p *peer) RequestedAccess(ctx context.Context, req *consensus.Request) (*consensus.Reply, error) {
 	log.Printf("Received access request from peer %d (Lamport time %d)\n", req.Id, req.LamportTime)
-	p.IncrementLamportTime(req.LamportTime)
 	//This if statement looks like a mess. It checks if the state is held or if the state is wanted AND if our Lamport time is greater than the requested
 	//OR if it is the same and our id is less than the other one.
 	if p.state == HELD || (p.state == WANTED && (p.lamportTime < req.LamportTime || (p.lamportTime == req.LamportTime && p.id < req.Id))) {
@@ -129,6 +128,7 @@ func (p *peer) RequestedAccess(ctx context.Context, req *consensus.Request) (*co
 		LamportTime: p.lamportTime,
 		Id:          p.id,
 	}
+	p.IncrementLamportTime(req.LamportTime)
 	log.Printf("Reply access request from peer %d (Lamport time %d)\n", req.Id, p.lamportTime)
 	return reply, nil
 }
