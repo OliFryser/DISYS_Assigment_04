@@ -1,0 +1,12 @@
+2022/11/15 14:24:37 My id: 5002
+2022/11/15 14:24:46 Received access request from peer 5000 (Lamport time 3)
+2022/11/15 14:24:46 Reply access request from peer 5000 (Lamport time 4)
+2022/11/15 14:24:47 Received access request from peer 5001 (Lamport time 5)
+2022/11/15 14:24:47 Reply access request from peer 5001 (Lamport time 6)
+2022/11/15 14:24:49 State is WANTED
+2022/11/15 14:24:49 Requesting access from peer 5000 (Lamport time: 8)
+2022/11/15 14:24:49 Requesting access from peer 5001 (Lamport time: 9)
+2022/11/15 14:24:51 Got reply from peer 5000 (Lamport time: 10)
+2022/11/15 14:24:56 Got reply from peer 5001 (Lamport time: 11)
+2022/11/15 14:24:56 State is HELD
+2022/11/15 14:25:01 State is RELEASED

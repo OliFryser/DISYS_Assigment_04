@@ -32,17 +32,17 @@ func main() {
 		ctx:          ctx,
 	}
 
-	/*Parses id to string for logfile name
-	idString = strconv.Itoa(*p.id)
+	//Parses id to string for logfile name
+	idString := strconv.Itoa(int(p.id))
 
 	//Prints to log file instead of terminal
 
-	f, err := os.OpenFile("logfile."+*p.idString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile("logfile."+idString, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
 	defer f.Close()
-	log.SetOutput(f)*/
+	log.SetOutput(f)
 
 	// Create listener tcp on port ownPort
 	list, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", ownPort))
