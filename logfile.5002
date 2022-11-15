@@ -10,3 +10,40 @@
 2022/11/15 14:24:56 Got reply from peer 5001 (Lamport time: 11)
 2022/11/15 14:24:56 State is HELD
 2022/11/15 14:25:01 State is RELEASED
+2022/11/15 14:27:00 My id: 5002
+2022/11/15 14:27:01 Received access request from peer 5000 (Lamport time 3)
+2022/11/15 14:27:01 Reply access request from peer 5000 (Lamport time 4)
+2022/11/15 14:27:02 Received access request from peer 5001 (Lamport time 6)
+2022/11/15 14:27:02 Reply access request from peer 5001 (Lamport time 7)
+2022/11/15 14:27:05 State is WANTED
+2022/11/15 14:27:05 Requesting access from peer 5000 (Lamport time: 9)
+2022/11/15 14:27:05 Requesting access from peer 5001 (Lamport time: 10)
+2022/11/15 14:27:06 Got reply from peer 5000 (Lamport time: 11)
+2022/11/15 14:27:11 Got reply from peer 5001 (Lamport time: 12)
+2022/11/15 14:27:11 State is HELD
+2022/11/15 14:27:16 State is RELEASED
+2022/11/15 14:27:33 My id: 5002
+2022/11/15 14:27:33 Received access request from peer 5000 (Lamport time 3)
+2022/11/15 14:27:33 Reply access request from peer 5000 (Lamport time 4)
+2022/11/15 14:27:36 Received access request from peer 5001 (Lamport time 6)
+2022/11/15 14:27:36 Reply access request from peer 5001 (Lamport time 7)
+2022/11/15 14:27:38 State is WANTED
+2022/11/15 14:27:38 Requesting access from peer 5000 (Lamport time: 9)
+2022/11/15 14:27:38 Requesting access from peer 5001 (Lamport time: 10)
+2022/11/15 14:27:38 Got reply from peer 5000 (Lamport time: 11)
+2022/11/15 14:27:38 Received access request from peer 5000 (Lamport time 13)
+2022/11/15 14:27:43 Got reply from peer 5001 (Lamport time: 12)
+2022/11/15 14:27:43 State is HELD
+2022/11/15 14:27:43 Received access request from peer 5001 (Lamport time 16)
+2022/11/15 14:28:15 My id: 5002
+2022/11/15 14:28:22 Received access request from peer 5000 (Lamport time 3)
+2022/11/15 14:28:22 Reply access request from peer 5000 (Lamport time 4)
+2022/11/15 14:28:24 Received access request from peer 5001 (Lamport time 6)
+2022/11/15 14:28:24 Reply access request from peer 5001 (Lamport time 7)
+2022/11/15 14:28:26 State is WANTED
+2022/11/15 14:28:26 Requesting access from peer 5000 (Lamport time: 9)
+2022/11/15 14:28:26 Requesting access from peer 5001 (Lamport time: 10)
+2022/11/15 14:28:27 Got reply from peer 5000 (Lamport time: 11)
+2022/11/15 14:28:32 Got reply from peer 5001 (Lamport time: 12)
+2022/11/15 14:28:32 State is HELD
+2022/11/15 14:28:37 State is RELEASED
